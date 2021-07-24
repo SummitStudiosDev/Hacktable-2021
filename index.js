@@ -14,6 +14,9 @@ app.get('/', function(req, res) {
    res.render("index.html")
 });
 
+app.get('/dashboard', function(req, res) {
+   res.render("dashboard.html")
+});
 
 let port = 8080;
 app.listen(port, () => {
