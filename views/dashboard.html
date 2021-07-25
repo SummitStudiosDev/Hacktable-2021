@@ -48,6 +48,10 @@ Total Donated: <span id="totalDonated">NO DATA FETCHED YET</span> <br>
 
 <br>
 <button type="button" class="btn btn-info    " data-mdb-ripple-color="#ffffff" onclick="donated()"> I donated! Add to my counter! </button>
+<br><br>
+<button type="button" class="btn btn-primary    " style="background-color:#ff787f" onclick="clearMonth()"> Its a new month! Clear my monthly donations  </button>
+
+
 
 <style>
 #progressBar {
@@ -150,7 +154,8 @@ async function genID(){
       }
     })
     .then(function(res){
-        swal("Your ID is "+id+"! Keep it somewhere safe. You will need this to access your profile")
+        swal("Your ID is "+id+"! Keep it somewhere safe. You will need this to access your profile. ")
+        getData2(id);
     })
     .catch(function(err){
       swal("Error", "API error.", "error", {
@@ -185,6 +190,7 @@ async function getData(){
       return false
     }
 
+    swal.close();
     getData2(inputValue);
 
 
@@ -198,7 +204,6 @@ async function getData2(id){
     return;
   }
   //swal("Yay!"+JSON.stringify(dbres));
-  swal.close();
 
   document.getElementById("monthlygoal").innerHTML=dbres.goal;
   document.getElementById("monthlyDonated").innerHTML=dbres.currentMonth;
@@ -284,7 +289,8 @@ async function donated2(id, money){
     }
   })
   .then(function(res){
-      swal("Success! Refresh to see the new content")
+      //swal("Success! ")
+        getData2(id);
   })
   .catch(function(err){
     swal("Error", "API error.", "error", {
@@ -295,4 +301,70 @@ async function donated2(id, money){
 }
 
 
+
+
+
+async function clearMonth(){
+  swal({
+    text: 'Write your id here!',
+    content: "input",
+    button: {
+      text: "Enter",
+      closeModal: false,
+    },
+  })
+  .then(inputValue => {
+    if (inputValue === null) return false;
+    
+    if (inputValue === "") {
+      swal("You need to write something!");
+      return false
+    }
+
+    if(isNaN(inputValue)){
+      swal("You need to write a number!");
+      return false
+    }
+
+    swal.close();
+    clearMonth2(inputValue);
+
+  })
+
+}
+async function clearMonth2(id){
+  let dbres = await getapi(id);
+  if(JSON.stringify(dbres) ==JSON.stringify({}) ){
+    swal("No profile is under this ID!");
+    return;
+  }
+
+  let newjson = dbres;
+  newjson["currentMonth"]=0;
+
+  axios({
+    method: 'post',
+    url: '/api/v1/set',
+    withCredentials: true,
+    data: {
+      id: id,
+      json: JSON.stringify(newjson)
+    }
+  })
+  .then(function(res){
+      //swal("Success! ")
+        getData2(id);
+  })
+  .catch(function(err){
+    swal("Error", "API error.", "error", {
+      button: "Continue",
+    });
+  })
+
+}
+
 </script>
+
+
+
+<%- include('parts/footer.ejs'); %>

@@ -27,6 +27,11 @@ app.get('/resources', function(req, res) {
    res.render("resources.html")
 });
 
+app.get('/acknowledgements', function(req, res) {
+   res.render("acknowledgements.html")
+});
+
+
 let port = 8080;
 app.listen(port, () => {
   console.log(`Website listening at http://localhost:${port}`)
