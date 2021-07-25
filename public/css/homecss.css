@@ -99,3 +99,18 @@ body{font-family: Poppins;}
 .ohead{
   font-size: 30px;
 }
+
+.pa, .pa:link {
+  color: rgb(255, 255, 255);
+  text-decoration: none;
+  background-position-y: -0%;
+  background-image: linear-gradient( #085494 50%, rgb(105, 140, 255) 50%);
+  transition: background 500ms ease;
+  background-size: 2px;
+  background-size: auto 175%;
+}
+
+.pa:hover {
+  background-position-y: 100%;
+  color: white;
+}

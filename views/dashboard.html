@@ -35,6 +35,17 @@
 
 <br><br><br>
 
+<button type="button" class="btn btn-danger    " data-mdb-ripple-color="#ffffff" onclick="getData()"> Click me to get/refresh your data!</button>
+
+<br><br>
+
+Monthly donation goal: <span id="monthlygoal">NO DATA FETCHED YET</span> <br>
+Monthly donation progress: <span id="monthlyDonated">NO DATA FETCHED YET</span> <br>
+Progress Bar: <span id="progressBar">NO DATA FETCHED YET</span> <br>
+Total Donated: <span id="totalDonated">NO DATA FETCHED YET</span> <br>
+
+
+
 </div>
 </center>
 
@@ -76,12 +87,12 @@ async function genID(){
     if (inputValue === null) return false;
     
     if (inputValue === "") {
-      swal.showInputError("You need to write something!");
+      swal("You need to write something!");
       return false
     }
 
     if(isNaN(inputValue)){
-      swal.showInputError("You need to write a number!");
+      swal("You need to write a number!");
       return false
     }
 
@@ -91,7 +102,7 @@ async function genID(){
       withCredentials: true,
       data: {
         id: id,
-        json: "{goal: "+inputValue+", currentMonth: 0, total: 0, badges:[]}"
+        json: '{"goal": '+inputValue+', "currentMonth": 0, "total": 0, "badges":[]}'
       }
     })
     .then(function(res){
@@ -102,7 +113,55 @@ async function genID(){
         button: "Continue",
       });
     })
-})
+  })
 
 }
+
+
+
+async function getData(){
+  swal({
+    text: 'Write your id here!',
+    content: "input",
+    button: {
+      text: "Enter",
+      closeModal: false,
+    },
+  })
+  .then(inputValue => {
+    if (inputValue === null) return false;
+    
+    if (inputValue === "") {
+      swal("You need to write something!");
+      return false
+    }
+
+    if(isNaN(inputValue)){
+      swal("You need to write a number!");
+      return false
+    }
+
+    getData2(inputValue);
+
+
+  })
+
+}
+async function getData2(id){
+  let dbres = await getapi(id);
+  if(JSON.stringify(dbres) ==JSON.stringify({}) ){
+    swal("No profile is under this ID!");
+    return;
+  }
+  //swal("Yay!"+JSON.stringify(dbres));
+  swal.close();
+
+  document.getElementById("monthlygoal").innerHTML=dbres.goal;
+  document.getElementById("monthlyDonated").innerHTML=dbres.currentMonth;
+  //document.getElementById("progressBar").innerHTML
+  document.getElementById("totalDonated").innerHTML=dbres.total;
+  
+
+}
+
 </script>
