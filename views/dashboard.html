@@ -30,16 +30,11 @@
 
 <center>
 <div id="box" class="whitetext" style="background-color: rgb(0,0,0,0.4); backdrop-filter: blur(10px);">
-  <h2 class="titletexthing">
-    <b>Welcome to our site about Zero Hunger</b>
-  </h2>
-  <p>
-    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Enim nec dui nunc mattis enim ut tellus elementum sagittis. Scelerisque felis imperdiet proin fermentum leo. Adipiscing diam donec adipiscing tristique. Consequat interdum varius sit amet mattis vulputate enim nulla aliquet. Mauris in aliquam sem fringilla ut. Aenean vel elit scelerisque mauris pellentesque pulvinar pellentesque habitant morbi. Nec sagittis aliquam malesuada bibendum arcu vitae elementum. Urna molestie at elementum eu facilisis. Vitae ultricies leo integer malesuada nunc vel risus. Orci eu lobortis elementum nibh tellus molestie nunc. Sed viverra ipsum nunc aliquet bibendum enim facilisis gravida neque. Mi proin sed libero enim sed faucibus turpis in eu. Diam quam nulla porttitor massa. Interdum varius sit amet mattis vulputate enim nulla aliquet. Pharetra convallis posuere morbi leo urna molestie at elementum eu. Varius morbi enim nunc faucibus a pellentesque sit. Tempor orci eu lobortis elementum nibh tellus.
 
-    <br><br>
+<button type="button" class="btn btn-primary    " data-mdb-ripple-color="#619eff" style="background-color:#0058e6" onclick="genID()"> First Time Here? Click to generate a profile </button>
 
-    Justo eget magna fermentum iaculis eu non diam phasellus. Sit amet consectetur adipiscing elit pellentesque habitant morbi. Ipsum suspendisse ultrices gravida dictum fusce ut placerat orci. Natoque penatibus et magnis dis. Non diam phasellus vestibulum lorem sed. Purus sit amet volutpat consequat mauris nunc congue nisi vitae. Parturient montes nascetur ridiculus mus mauris vitae. Cursus mattis molestie a iaculis at erat pellentesque. A scelerisque purus semper eget duis. Pretium viverra suspendisse potenti nullam ac tortor vitae purus faucibus.
-  </p>
+<br><br><br>
+
 </div>
 </center>
 
@@ -49,3 +44,65 @@
 </div>
 </body>
 </html>
+
+<script>
+async function getapi(id) {
+  const response = await fetch('/api/v1/get/'+id);
+  const data = await response.json();
+  return data;
+}
+async function genID(){
+  let id = "";
+  while(true){
+    id = Math.random().toString().slice(2,10);
+    const data = await getapi(id);
+    console.log(data);
+    if(JSON.stringify(data) ==JSON.stringify({}) ){
+      break;
+    }
+  }
+  console.log(id);
+
+
+  swal({
+    text: 'Write your donation goal per month here!',
+    content: "input",
+    button: {
+      text: "Enter",
+      closeModal: false,
+    },
+  })
+  .then(inputValue => { //helpp it says cannot get /resources
+    if (inputValue === null) return false;
+    
+    if (inputValue === "") {
+      swal.showInputError("You need to write something!");
+      return false
+    }
+
+    if(isNaN(inputValue)){
+      swal.showInputError("You need to write a number!");
+      return false
+    }
+
+    axios({
+      method: 'post',
+      url: '/api/v1/set',
+      withCredentials: true,
+      data: {
+        id: id,
+        json: "{goal: "+inputValue+", currentMonth: 0, total: 0, badges:[]}"
+      }
+    })
+    .then(function(res){
+        swal("Your ID is "+id+"! Keep it somewhere safe. You will need this to access your profile")
+    })
+    .catch(function(err){
+      swal("Error", "API error.", "error", {
+        button: "Continue",
+      });
+    })
+})
+
+}
+</script>

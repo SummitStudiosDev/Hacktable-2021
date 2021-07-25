@@ -9,6 +9,11 @@ app.set('views', __dirname + '/views');
 app.engine('html', require('ejs').renderFile);
 app.use('/static', express.static('public'))
 
+const Client = require("replitdb-client");
+const client = new Client();
+
+app.use('/api/v1', require('./api'));
+
 
 app.get('/', function(req, res) {
    res.render("index.html")
@@ -16,6 +21,10 @@ app.get('/', function(req, res) {
 
 app.get('/dashboard', function(req, res) {
    res.render("dashboard.html")
+});
+
+app.get('/resources', function(req, res) {
+   res.render("resources.html")
 });
 
 let port = 8080;
