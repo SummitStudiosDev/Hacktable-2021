@@ -8,7 +8,8 @@ app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
 app.set('views', __dirname + '/views');
 app.engine('html', require('ejs').renderFile);
-app.use('/static', express.static('public'))
+app.use('/static', express.static('static'))
+//app.use('/', express.static('./'))
 
 const Client = require("replitdb-client");
 const client = new Client();
@@ -31,6 +32,15 @@ app.get('/resources', function(req, res) {
 app.get('/acknowledgements', function(req, res) {
    res.render("acknowledgements.html")
 });
+
+app.get('/mybadges', function(req, res) {
+   res.render("mybadges.html")
+});
+
+app.get('/games', function(req, res) {
+   res.send("Unfortunately, due to technical difficulties, we could not embed the game onto the website. If you would like to test it, here is the download link: <a href='https://flying-in.space/PZ1JMTgmR2.zip?key=AcdM7aNqyV2s81'> Download Link </a> <br> <br> In the game, you collect food, and the goal is to collect all the food!")
+});
+
 
 app.get("/badges", function(req, res) {
    fs.readFile('badges.json', 'utf8', function (err, data) {

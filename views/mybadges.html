@@ -1,0 +1,113 @@
+<%- include('parts/dependencies.ejs'); %>
+	<link rel="stylesheet" type="text/css" href="/static/css/homecss.css">
+	<link rel="stylesheet" type="text/css" href="/static/css/textcolors.css">
+  
+  
+
+
+	<html>
+
+	<body>
+
+
+<div id="body1">
+
+<%- include('parts/navbar.ejs'); %>
+  <style>
+    #body1 {
+      background-image: url("static/img/BG-9.jpg");
+      background-position: center;
+      background-repeat: no-repeat;
+      background-size: cover;
+    }
+  </style>
+
+  <br><br><br>
+
+<center>
+<button type="button" class="btn btn-success    " onclick="getBadges()"> Click to view your Badges! </button>
+<div id="badgeBox" class="whitetext" style="background-color: rgb(0,0,0,0.4); backdrop-filter: blur(10px);">
+</div>
+</center>
+
+<br><br><br>
+
+
+</div>
+</body>
+</html>
+
+<script>
+async function badgeApi() {
+  const response = await fetch('/badges');
+  const data = await response.json();
+  return data; 
+}
+async function getapi(id) {
+  const response = await fetch('/api/v1/get/'+id);
+  const data = await response.json();
+  return data;
+} 
+
+
+async function getBadges(){
+  swal({
+    text: 'Write your id here!',
+    content: "input",
+    button: {
+      text: "Enter",
+      closeModal: false,
+    },
+  })
+  .then(inputValue => {
+    if (inputValue === null) return false;
+    
+    if (inputValue === "") {
+      swal("You need to write something!");
+      return false
+    }
+
+    if(isNaN(inputValue)){
+      swal("You need to write a number!");
+      return false
+    }
+
+    swal.close();
+    getBadges2(inputValue);
+
+
+  })
+}
+async function getBadges2(id){
+  let dbres = await getapi(id);
+  let allBadges = await badgeApi();
+  let urBadges = dbres.badges;
+
+  badgeBox.innerHTML="";
+
+  (allBadges.monthlyBadges).forEach(function(value, index) {
+    
+    if(urBadges.indexOf(value.title)!=-1){
+      //found, has badge
+      console.log("has "+value);
+      badgeBox.innerHTML += `
+      <br>
+      (Found) Badge: `+value.displaytitle+`, `+value.desc+`<br>
+      <img style="width:10%;" src=`+value.img+`>
+      `
+    }else{
+      badgeBox.innerHTML += `
+      <br>
+      (Not Found) Badge: `+value.displaytitle+`, `+value.desc+`<br>
+      <img style="width:10%; -webkit-filter: grayscale(100%); filter: grayscale(100%);" src=`+value.img+`>
+      `
+    }
+
+  });
+
+
+}
+
+</script>
+
+<%- include('parts/footer.ejs'); %>
