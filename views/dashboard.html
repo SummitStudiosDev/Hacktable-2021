@@ -1,4 +1,5 @@
 <%- include('parts/dependencies.ejs'); %>
+
 	<link rel="stylesheet" type="text/css" href="/static/css/homecss.css">
 	<link rel="stylesheet" type="text/css" href="/static/css/textcolors.css">
 
@@ -41,10 +42,21 @@
 
 Monthly donation goal: <span id="monthlygoal">NO DATA FETCHED YET</span> <br>
 Monthly donation progress: <span id="monthlyDonated">NO DATA FETCHED YET</span> <br>
-Progress Bar: <span id="progressBar">NO DATA FETCHED YET</span> <br>
+Progress Bar: <div id="progressBar"></div><br>
 Total Donated: <span id="totalDonated">NO DATA FETCHED YET</span> <br>
 
 
+<br>
+<button type="button" class="btn btn-info    " data-mdb-ripple-color="#ffffff" onclick="donated()"> I donated! Add to my counter! </button>
+
+<style>
+#progressBar {
+  margin: 20px;
+  width: 200px;
+  height: 200px;
+  position: relative;
+}
+</style>
 
 </div>
 </center>
@@ -57,6 +69,38 @@ Total Donated: <span id="totalDonated">NO DATA FETCHED YET</span> <br>
 </html>
 
 <script>
+var bar = new ProgressBar.Circle("#progressBar", {
+  color: '#aaa',
+  // This has to be the same size as the maximum width to
+  // prevent clipping
+  strokeWidth: 4,
+  trailWidth: 1,
+  easing: 'easeInOut',
+  duration: 1400,
+  text: {
+    autoStyleContainer: false
+  },
+  from: { color: '#aaa', width: 1 },
+  to: { color: '#333', width: 4 },
+  // Set default step function for all animate calls
+  step: function(state, circle) {
+    circle.path.setAttribute('stroke', state.color);
+    circle.path.setAttribute('stroke-width', state.width);
+
+    var value = Math.round(circle.value() * 100);
+    if (value === 0) {
+      circle.setText('');
+    } else {
+      circle.setText(value);
+    }
+
+  }
+});
+bar.text.style.fontFamily = '"Raleway", Helvetica, sans-serif';
+bar.text.style.fontSize = '2rem';
+
+bar.animate(0.0);  // Number from 0.0 to 1.0
+
 async function getapi(id) {
   const response = await fetch('/api/v1/get/'+id);
   const data = await response.json();
@@ -159,9 +203,95 @@ async function getData2(id){
   document.getElementById("monthlygoal").innerHTML=dbres.goal;
   document.getElementById("monthlyDonated").innerHTML=dbres.currentMonth;
   //document.getElementById("progressBar").innerHTML
+  bar.animate(dbres.currentMonth/dbres.goal);
+  console.log(dbres.currentMonth/dbres.goal)
   document.getElementById("totalDonated").innerHTML=dbres.total;
-  
 
 }
+
+
+async function donated(){
+  swal({
+    text: 'Write your id here!',
+    content: "input",
+    button: {
+      text: "Enter",
+      closeModal: false,
+    },
+  })
+  .then(inputValue => {
+    if (inputValue === null) return false;
+    
+    if (inputValue === "") {
+      swal("You need to write something!");
+      return false
+    }
+
+    if(isNaN(inputValue)){
+      swal("You need to write a number!");
+      return false
+    }
+
+      swal({
+        text: 'How much money did you donate?',
+        content: "input",
+        button: {
+          text: "Enter",
+          closeModal: false,
+        },
+      })
+      .then(inputMoney => {
+        if (inputMoney === null) return false;
+        
+        if (inputMoney === "") {
+          swal("You need to write something!");
+          return false
+        }
+
+        if(isNaN(inputMoney)){
+          swal("You need to write a number!");
+          return false
+        }
+
+        console.log("ID: "+inputValue+ " MoNEY: "+inputMoney)
+        donated2(inputValue,inputMoney)
+
+      })
+
+  })
+}
+
+
+async function donated2(id, money){
+  let dbres = await getapi(id);
+  if(JSON.stringify(dbres) ==JSON.stringify({}) ){
+    swal("No profile is under this ID!");
+    return;
+  }
+  swal.close();
+  let newjson = dbres;
+  newjson["currentMonth"]=dbres["currentMonth"]+parseInt(money);
+  console.log(newjson);
+
+  axios({
+    method: 'post',
+    url: '/api/v1/set',
+    withCredentials: true,
+    data: {
+      id: id,
+      json: JSON.stringify(newjson)
+    }
+  })
+  .then(function(res){
+      swal("Success! Refresh to see the new content")
+  })
+  .catch(function(err){
+    swal("Error", "API error.", "error", {
+      button: "Continue",
+    });
+  })
+
+}
+
 
 </script>
