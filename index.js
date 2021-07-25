@@ -1,6 +1,7 @@
 const express = require("express")
 const app = express();
 var bodyParser = require('body-parser')
+var fs = require('fs');
 
 
 app.use(bodyParser.urlencoded({ extended: false }))
@@ -29,6 +30,14 @@ app.get('/resources', function(req, res) {
 
 app.get('/acknowledgements', function(req, res) {
    res.render("acknowledgements.html")
+});
+
+app.get("/badges", function(req, res) {
+   fs.readFile('badges.json', 'utf8', function (err, data) {
+      if (err) throw err;
+      obj = JSON.parse(data);
+      res.send(obj);
+    });
 });
 
 

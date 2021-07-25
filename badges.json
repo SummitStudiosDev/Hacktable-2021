@@ -1,0 +1,29 @@
+{
+  "monthlyBadges":[  
+    {
+      "title": "halfgoal",
+      "displaytitle": "Halfway There!",
+      "desc": "Reached half of your monthly goal!",
+      "img": "/static/img/Fifty_Badge.png",
+      "required": 50
+    },{
+      "title": "hundredgoal",
+      "displaytitle": "You made it!",
+      "desc": "Reached your monthly goal!",   
+      "img": "/static/img/One_Hundred_Badge.png",
+      "required": 100
+    },{
+      "title": "onefiftygoal",
+      "displaytitle": "Overachiever!",
+      "desc": "Reached 150% of your monthly goal!",   
+      "img": "/static/img/One_Hundred_and_Fifty_Badge.png",
+      "required": 150
+    },{
+      "title": "twohundredgoal",
+      "displaytitle": "2x Overachiever!",
+      "desc": "Reached 2 times your monthly goal!",   
+      "img": "/static/img/Two_Hundred_Badge.png",
+      "required": 200
+    }
+  ]
+}

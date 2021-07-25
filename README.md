@@ -12,5 +12,3 @@ Our goal is to get people aware of hunger issues around the world, and encourage
 - [x] Resources to use
 - [x] Badge system to encourage you to keep going
 
-
-ananya we dont have badges yet! :rofl:

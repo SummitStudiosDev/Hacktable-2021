@@ -44,7 +44,7 @@ Monthly donation goal: <span id="monthlygoal">NO DATA FETCHED YET</span> <br>
 Monthly donation progress: <span id="monthlyDonated">NO DATA FETCHED YET</span> <br>
 Progress Bar: <div id="progressBar"></div><br>
 Total Donated: <span id="totalDonated">NO DATA FETCHED YET</span> <br>
-
+Badges Obtained: <span id="badgesObtained">NO DATA FETCHED YET</span> <br>
 
 <br>
 <button type="button" class="btn btn-info    " data-mdb-ripple-color="#ffffff" onclick="donated()"> I donated! Add to my counter! </button>
@@ -212,6 +212,21 @@ async function getData2(id){
   console.log(dbres.currentMonth/dbres.goal)
   document.getElementById("totalDonated").innerHTML=dbres.total;
 
+  document.getElementById("badgesObtained").innerHTML = "";
+
+
+  let allBadges = await badgeApi();
+  (dbres.badges).forEach(function(value, index) {
+    
+    (allBadges.monthlyBadges).forEach(function(value2, index2) {
+        if(value==value2.title){
+          document.getElementById("badgesObtained").innerHTML+=value2.displaytitle+", ";
+        }
+    });
+
+  });
+
+
 }
 
 
@@ -291,6 +306,7 @@ async function donated2(id, money){
   .then(function(res){
       //swal("Success! ")
         getData2(id);
+        checkBadges(id);
   })
   .catch(function(err){
     swal("Error", "API error.", "error", {
@@ -361,6 +377,63 @@ async function clearMonth2(id){
     });
   })
 
+}
+
+async function badgeApi() {
+  const response = await fetch('/badges');
+  const data = await response.json();
+  return data;
+}
+async function checkBadges(id){
+  let allBadges = await badgeApi();
+  let dbres = await getapi(id);
+  let percentage = dbres.currentMonth/dbres.goal*100;
+
+  //check goal badges
+  console.log(allBadges.monthlyBadges);
+  let monthlyBadges = allBadges.monthlyBadges;
+  monthlyBadges.forEach(function(value, index) {
+    //console.log(`Index: ${index}, Name: ${profile.name}`);
+    //console.log(value.required)
+    if(percentage>=value.required){
+      if((dbres.badges).indexOf(value.title)==-1){
+        console.log("You got the badge "+value.title);
+
+      var div = document.createElement("div");
+      div.innerHTML = value.desc+'<br><img style="width:50%;" src="'+value.img+'">';
+
+        swal({
+            title: 'New Badge! '+value.displaytitle,
+            content: div
+        });
+        addBadge(id, value.title);
+      }
+    }
+  });
+}
+async function addBadge(id, title){
+  let dbres = await getapi(id);
+  let newjson = dbres;
+  newjson["badges"].push(title);
+
+  axios({
+    method: 'post',
+    url: '/api/v1/set',
+    withCredentials: true,
+    data: {
+      id: id,
+      json: JSON.stringify(newjson)
+    }
+  })
+  .then(function(res){
+      //swal("Success! ")
+        getData2(id);
+  })
+  .catch(function(err){
+    swal("Error", "API error.", "error", {
+      button: "Continue",
+    });
+  })
 }
 
 </script>
