@@ -227,6 +227,11 @@ async function getData2(id){
   });
 
 
+  let badgeContent = document.getElementById("badgesObtained").innerHTML.trim();
+  if( badgeContent.charAt(badgeContent.length - 1) == ','){
+    document.getElementById("badgesObtained").innerHTML = badgeContent.substring(0, badgeContent.length - 1);
+  }
+
 }
 
 
