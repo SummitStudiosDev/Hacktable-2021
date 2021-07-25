@@ -80,8 +80,8 @@ var bar = new ProgressBar.Circle("#progressBar", {
   text: {
     autoStyleContainer: false
   },
-  from: { color: '#aaa', width: 1 },
-  to: { color: '#333', width: 4 },
+  from: { color: '#f8fc03', width: 1 },
+  to: { color: '#0356fc', width: 4 },
   // Set default step function for all animate calls
   step: function(state, circle) {
     circle.path.setAttribute('stroke', state.color);
@@ -271,6 +271,7 @@ async function donated2(id, money){
   swal.close();
   let newjson = dbres;
   newjson["currentMonth"]=dbres["currentMonth"]+parseInt(money);
+  newjson["total"]=dbres["total"]+parseInt(money);
   console.log(newjson);
 
   axios({
